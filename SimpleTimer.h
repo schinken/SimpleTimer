@@ -34,7 +34,9 @@
 #include <WProgram.h>
 #endif
 
-typedef void (*timer_callback)(void);
+#include <functional>
+
+typedef std::function<void(void)> timer_callback;
 
 class SimpleTimer {
 

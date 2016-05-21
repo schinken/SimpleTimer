@@ -97,11 +97,11 @@ void SimpleTimer::run() {
                 break;
 
             case DEFCALL_RUNONLY:
-                (*callbacks[i])();
+                callbacks[i]();
                 break;
 
             case DEFCALL_RUNANDDEL:
-                (*callbacks[i])();
+                callbacks[i]();
                 deleteTimer(i);
                 break;
         }
