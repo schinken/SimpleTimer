@@ -28,13 +28,13 @@
 #ifndef SIMPLETIMER_H
 #define SIMPLETIMER_H
 
+#include <functional>
+
 #if defined(ARDUINO) && ARDUINO >= 100
 #include <Arduino.h>
 #else
 #include <WProgram.h>
 #endif
-
-#include <functional>
 
 typedef std::function<void(void)> timer_callback;
 
