@@ -1,5 +1,7 @@
 # SimpleTimer for Arduino
 
+[![CI](https://github.com/schinken/SimpleTimer/actions/workflows/ci.yml/badge.svg)](https://github.com/schinken/SimpleTimer/actions/workflows/ci.yml)
+
 Run callbacks at an interval or after a timeout, polled from `loop()`. No interrupts.
 
 This is a fork of the SimpleTimer library from Marcello Romani (https://playground.arduino.cc/Code/SimpleTimer). Sadly there is no original repository to apply pull requests.
@@ -37,6 +39,23 @@ void loop() {
     timer.run();
 }
 ```
+
+A complete sketch is in [examples/Basic](examples/Basic/Basic.ino).
+
+## Supported boards
+
+CI compiles the example for every push:
+
+| Family | Board in CI |
+| --- | --- |
+| AVR | Arduino Uno |
+| megaAVR | Arduino Nano Every |
+| SAMD | Arduino MKR Zero |
+| Renesas | Arduino Uno R4 Minima |
+| RP2040 | Raspberry Pi Pico |
+| STM32 | Blue Pill F103C8 |
+| ESP8266 | NodeMCU v2 |
+| ESP32 | ESP32 Dev Module |
 
 ## API
 
