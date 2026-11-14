@@ -67,9 +67,11 @@ void SimpleTimer::run() {
 
             if (current_millis - prev_millis[i] >= delays[i]) {
 
-                // update time
-                //prev_millis[i] = current_millis;
-                prev_millis[i] += delays[i];
+                // advance to the start of the current interval, so runs
+                // missed while loop() was blocked are skipped, not replayed
+                if (delays[i]) {
+                    prev_millis[i] = current_millis - (current_millis - prev_millis[i]) % delays[i];
+                }
 
                 // check if the timer callback has to be executed
                 if (enabled[i]) {
@@ -94,19 +96,17 @@ void SimpleTimer::run() {
     }
 
     for (i = 0; i < MAX_TIMERS; i++) {
-        switch(toBeCalled[i]) {
-            case DEFCALL_DONTRUN:
-                break;
-
-            case DEFCALL_RUNONLY:
-                callbacks[i]();
-                break;
-
-            case DEFCALL_RUNANDDEL:
-                callbacks[i]();
-                deleteTimer(i);
-                break;
+        if (toBeCalled[i] == DEFCALL_DONTRUN) {
+            continue;
         }
+
+        // call a copy, the callback may delete or re-create its own timer
+        // ponytail: copies a std::function per call, move it on the last run if that gets too costly
+        timer_callback callback = callbacks[i];
+        if (toBeCalled[i] == DEFCALL_RUNANDDEL) {
+            deleteTimer(i);
+        }
+        callback();
     }
 }
 
@@ -168,7 +168,7 @@ int SimpleTimer::setTimeout(unsigned long d, timer_callback f) {
 
 
 void SimpleTimer::deleteTimer(int timerId) {
-    if (timerId >= MAX_TIMERS) {
+    if (timerId < 0 || timerId >= MAX_TIMERS) {
         return;
     }
 
@@ -194,7 +194,7 @@ void SimpleTimer::deleteTimer(int timerId) {
 
 // function contributed by code@rowansimms.com
 void SimpleTimer::restartTimer(int numTimer) {
-    if (numTimer >= MAX_TIMERS) {
+    if (numTimer < 0 || numTimer >= MAX_TIMERS) {
         return;
     }
 
@@ -203,7 +203,7 @@ void SimpleTimer::restartTimer(int numTimer) {
 
 
 boolean SimpleTimer::isEnabled(int numTimer) {
-    if (numTimer >= MAX_TIMERS) {
+    if (numTimer < 0 || numTimer >= MAX_TIMERS) {
         return false;
     }
 
@@ -212,7 +212,7 @@ boolean SimpleTimer::isEnabled(int numTimer) {
 
 
 void SimpleTimer::enable(int numTimer) {
-    if (numTimer >= MAX_TIMERS) {
+    if (numTimer < 0 || numTimer >= MAX_TIMERS) {
         return;
     }
 
@@ -221,7 +221,7 @@ void SimpleTimer::enable(int numTimer) {
 
 
 void SimpleTimer::disable(int numTimer) {
-    if (numTimer >= MAX_TIMERS) {
+    if (numTimer < 0 || numTimer >= MAX_TIMERS) {
         return;
     }
 
@@ -230,7 +230,7 @@ void SimpleTimer::disable(int numTimer) {
 
 
 void SimpleTimer::toggle(int numTimer) {
-    if (numTimer >= MAX_TIMERS) {
+    if (numTimer < 0 || numTimer >= MAX_TIMERS) {
         return;
     }
 

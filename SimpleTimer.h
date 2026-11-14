@@ -30,11 +30,7 @@
 #include <functional>
 #endif // __AVR__
 
-#if defined(ARDUINO) && ARDUINO >= 100
 #include <Arduino.h>
-#else
-#include <WProgram.h>
-#endif
 
 #ifndef __AVR__
 typedef std::function<void(void)> timer_callback;
