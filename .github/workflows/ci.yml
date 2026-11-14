@@ -1,0 +1,52 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: c++ -std=c++11 -g -fsanitize=address,undefined -fno-sanitize-recover=all -Itest -I. test/test.cpp SimpleTimer.cpp -o /tmp/simpletimer-test && /tmp/simpletimer-test
+
+  compile:
+    name: ${{ matrix.fqbn }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - fqbn: arduino:avr:uno
+            platforms: |
+              - name: arduino:avr
+          - fqbn: arduino:megaavr:nona4809
+            platforms: |
+              - name: arduino:megaavr
+          - fqbn: arduino:samd:mkrzero
+            platforms: |
+              - name: arduino:samd
+          - fqbn: arduino:renesas_uno:minima
+            platforms: |
+              - name: arduino:renesas_uno
+          - fqbn: rp2040:rp2040:rpipico
+            platforms: |
+              - name: rp2040:rp2040
+                source-url: https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+          - fqbn: STMicroelectronics:stm32:GenF1:pnum=BLUEPILL_F103C8
+            platforms: |
+              - name: STMicroelectronics:stm32
+                source-url: https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+          - fqbn: esp8266:esp8266:nodemcuv2
+            platforms: |
+              - name: esp8266:esp8266
+                source-url: https://arduino.esp8266.com/stable/package_esp8266com_index.json
+          - fqbn: esp32:esp32:esp32
+            platforms: |
+              - name: esp32:esp32
+                source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+    steps:
+      - uses: actions/checkout@v7
+      - uses: arduino/compile-sketches@v1
+        with:
+          fqbn: ${{ matrix.fqbn }}
+          platforms: ${{ matrix.platforms }}
